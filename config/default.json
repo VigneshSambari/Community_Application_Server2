@@ -1,6 +1,6 @@
 {
 
-    "CurrentURL": "http://localhost:5000/",
-    "CurrentSocketURL": "https://localhost:3000/"
+    "CurrentURL": "https://communityapplication.onrender.com/",
+    "CurrentSocketURL": "https://community-application-socket-server.onrender.com/"
     
 }
