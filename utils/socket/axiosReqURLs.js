@@ -1,23 +1,31 @@
 const config = require('config');
 
+const currentUrl = config.get("CurrentURL");
+
 const profileURLS = {
-    "setOnline": `${config.get("CurrentURL")}profile/setonline/`,
-    "setOfflineLastSeen": `${config.get("CurrentURL")}profile/setoffline/`,
+    "setOnline": `${currentUrl}profile/setonline/`,
+    "setOfflineLastSeen": `${currentUrl}profile/setoffline/`,
     
 }
 
 
 const roomURLS = {
-    "checkIfMemberOfRoom": `${config.get("CurrentURL")}room/checkmember/`,
+    "checkIfMemberOfRoom": `${currentUrl}room/checkmember/`,
+    "sendMessage": `${currentUrl}room/sendmessage/`
 }
 
 
+const messageUrls = {
+    "createMessage": `${currentUrl}message/create/`
+}
+
 const personalChatURLS = {
-    "checkIfMemberOfChat": `${config.get("CurrentURL")}textuser/checkmember/`,
+    "checkIfMemberOfChat": `${currentUrl}textuser/checkmember/`,
 }
 
 module.exports = {
     profileURLS,
     roomURLS,
     personalChatURLS,
+    messageUrls
 }

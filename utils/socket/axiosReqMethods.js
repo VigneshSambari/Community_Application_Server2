@@ -2,7 +2,8 @@ const axios = require('axios');
 const {
     profileURLS,
     roomURLS,
-    personalChatURLS
+    personalChatURLS,
+    messageUrls
 } = require("./axiosReqURLs");
 
 //set the status of the user to online 
@@ -14,7 +15,7 @@ const statusOnlineSetRequest = async ({userId}) => {
     }
     catch(err){
         
-        console.log(err)
+        console.log("Inside setonline")
         throw {
             "_message": "Error in setting status to online!",
         }
@@ -25,6 +26,7 @@ const statusOnlineSetRequest = async ({userId}) => {
 const statusOfflineLastSeen = async ({userId}) => {
     try{
         const res = await axios.get(`${profileURLS.setOfflineLastSeen}${userId}`)
+       
         return res.data
     }
     catch(err){
@@ -56,7 +58,7 @@ const checkMemberOfRoom = async ({roomId, userId}) => {
 
 
 //check member of personal chat
-const checkMemberOfChat = async (req, res) => {
+const checkMemberOfChat = async ({chatId, userId}) => {
     try{
         const result = await axios.post(`${personalChatURLS.checkIfMemberOfChat}`,
             {
@@ -75,9 +77,43 @@ const checkMemberOfChat = async (req, res) => {
     }
 }
 
+
+const sendRoomMessage= async ({message,roomId}) => {
+    console.log(message,roomId);
+    try{
+        
+        console.log(message, roomId)
+        console.log("1");
+        const messageId = await axios.post(`${messageUrls.createMessage}`,{
+          ...message
+        },
+        {
+            headers: {
+              'Content-Type': 'application/json'
+            }}
+        )
+        console.log(messageId.body);
+        // const updatedRoom = await axios.post(`${roomURLS.sendMessage}`,{
+        //     messageId,
+        //     roomId
+        // }, {
+        //     headers: {
+        //       'Content-Type': 'application/json'
+        //     }})
+        console.log("3");
+        console.log(updatedRoom);
+    }
+    catch(err){
+        throw {
+            "_message": "Error in sending message",
+        }
+    }
+}
+
 module.exports = {
     statusOnlineSetRequest,
     statusOfflineLastSeen,
     checkMemberOfRoom,
-    checkMemberOfChat
+    checkMemberOfChat,
+    sendRoomMessage
 }

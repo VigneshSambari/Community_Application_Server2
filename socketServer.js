@@ -10,6 +10,7 @@ const {
     statusOfflineLastSeen,
     checkMemberOfRoom, 
     checkMemberOfChat,
+    sendRoomMessage
 } = require('./utils/socket/axiosReqMethods');
 const { welcomeMessage } = require('./utils/socket/socketFunctions');
 
@@ -22,18 +23,25 @@ const io = socketio(server);
 app.use(express.static(path.join(__dirname, 'public')));
 const botName = "bot";
 
-const PORT = 3000 || process.env.PORT;
+const PORT = 4000 || process.env.PORT;
 
 
 
 io.on('connection', socket => {
 
-    const user = socket.handshake.query;
+    const user = socket.request.headers;
+    const userId = user.userid;
 
+    console.log(userId);
+
+    socket.on('test',  (message) => {
+       console.log(message);
+    })
     //Set status to online
     socket.on('setOnline', async () => {
         try{
-            const updatedData = await statusOnlineSetRequest({userId: user.userId});
+            const updatedData = await statusOnlineSetRequest({userId: userId});
+            
         }
         catch(err){
             console.log(err);
@@ -46,7 +54,7 @@ io.on('connection', socket => {
     socket.on('enterRoom', async ({roomId}) => {
 
         try{
-            const isMember = await checkMemberOfRoom({userId: user.userId, roomId});
+            const isMember = await checkMemberOfRoom({userId: userId, roomId});
             console.log(isMember);
             if(isMember){
                 socket.join(roomId);
@@ -64,7 +72,7 @@ io.on('connection', socket => {
     //validating if user exist
     socket.on('startChat', async ({chatId}) => {
         try{
-            const isMember = await checkMemberOfChat({userId: user.userId, chatId});
+            const isMember = await checkMemberOfChat({userId: userId, chatId});
             console.log(member);
             if(isMember){
                 socket.join(chatId);
@@ -88,19 +96,27 @@ io.on('connection', socket => {
 
     //Listening to message on particular
     //roomId
-    socket.on('roomMessage', ({message, roomId}) => {
-        console.log(message);
-        console.log(roomId);
-        io.to(roomId).emit('message', message)
+    socket.on('roomMessage', async ({message, roomId}) => {
+        console.log(message, roomId);
+     
+        try{
+         const updatedRoom = await sendRoomMessage({message, roomId});
+            io.to(roomId).emit('message', message)
+        }
+        catch(err){
+            console.log(err);
+        }
+        
     })
 
 
     //When user disconnects set status to 
     //offline and lastseen time
     socket.on('disconnect', async() => {
+        console.log("Inside disconnect")
         //Set status to offline and last seen
-        const updatedData = statusOfflineLastSeen({userId: user.userId});
-        console.log(updatedData);
+        statusOfflineLastSeen({userId: userId});
+        
         io.emit('message', formatMessage(botName,'A user has left the chat'))
         //end
     });
