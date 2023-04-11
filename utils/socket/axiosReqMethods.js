@@ -82,24 +82,15 @@ const sendRoomMessage= async ({message,roomId}) => {
     console.log(message,roomId);
     try{
         
-        console.log(message, roomId)
-        console.log("1");
         const messageId = await axios.post(`${messageUrls.createMessage}`,{
           ...message
         },
-        {
-            headers: {
-              'Content-Type': 'application/json'
-            }}
         )
-        console.log(messageId.body);
-        // const updatedRoom = await axios.post(`${roomURLS.sendMessage}`,{
-        //     messageId,
-        //     roomId
-        // }, {
-        //     headers: {
-        //       'Content-Type': 'application/json'
-        //     }})
+        const updatedRoom = await axios.post(`${roomURLS.sendMessage}`,{
+            messageId: messageId.data,
+            roomId: roomId
+        },
+        )
         console.log("3");
         console.log(updatedRoom);
     }
@@ -110,10 +101,32 @@ const sendRoomMessage= async ({message,roomId}) => {
     }
 }
 
+const getRoomMessages = async ({fetchAfter, roomId}) => {
+    try{
+        console.log(fetchAfter, roomId)
+        console.log("Inside gerRoom messages");
+        console.log(`${messageUrls.getMessages}`)
+        console.log("12");
+        const result = await axios.post(`${messageUrls.getMessages}`,{
+            fetchAfter,
+            sentTo: roomId
+        });
+        console.log(14);
+        console.log(result.data);
+        return result.data;
+    }
+    catch(err){
+        throw {
+            "_message": "Error in fetching message",
+        }
+    }
+}
+
 module.exports = {
     statusOnlineSetRequest,
     statusOfflineLastSeen,
     checkMemberOfRoom,
     checkMemberOfChat,
-    sendRoomMessage
+    sendRoomMessage,
+    getRoomMessages
 }

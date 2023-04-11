@@ -10,7 +10,8 @@ const {
     statusOfflineLastSeen,
     checkMemberOfRoom, 
     checkMemberOfChat,
-    sendRoomMessage
+    sendRoomMessage,
+    getRoomMessages
 } = require('./utils/socket/axiosReqMethods');
 const { welcomeMessage } = require('./utils/socket/socketFunctions');
 
@@ -96,7 +97,7 @@ io.on('connection', socket => {
 
     //Listening to message on particular
     //roomId
-    socket.on('roomMessage', async ({message, roomId}) => {
+    socket.on('sendRoomMessage', async ({message, roomId}) => {
         console.log(message, roomId);
      
         try{
@@ -107,6 +108,28 @@ io.on('connection', socket => {
             console.log(err);
         }
         
+    })
+
+
+    //Fetch messages from room for user
+    socket.on('fetchRoomMessages', async ({roomId, fetchAfter}) => {
+        console.log("inside fetch room messages")
+        const data = {
+            'fetchAfter': Date.now()-24000,
+            'roomId': roomId
+        } 
+        try{
+            const messages = await getRoomMessages(data,{
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              });
+            socket.emit('fetchedRoomMessages', messages);
+            console.log(messages);
+        }   
+        catch(err){
+            console.log(err);
+        }
     })
 
 

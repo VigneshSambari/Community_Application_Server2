@@ -16,7 +16,8 @@ const roomURLS = {
 
 
 const messageUrls = {
-    "createMessage": `${currentUrl}message/create/`
+    "createMessage": `${currentUrl}message/create/`,
+    "getMessages": `${currentUrl}message/getmessages/`
 }
 
 const personalChatURLS = {
