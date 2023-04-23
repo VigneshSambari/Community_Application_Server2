@@ -38,11 +38,11 @@ io.on('connection', socket => {
     socket.on('test',  (message) => {
        console.log(message);
     })
+
     //Set status to online
     socket.on('setOnline', async () => {
         try{
-            const updatedData = await statusOnlineSetRequest({userId: userId});
-            
+            await statusOnlineSetRequest({userId: userId});
         }
         catch(err){
             console.log(err);
@@ -55,12 +55,12 @@ io.on('connection', socket => {
     socket.on('enterRoom', async ({roomId}) => {
 
         try{
-            const isMember = await checkMemberOfRoom({userId: userId, roomId});
-            console.log(isMember);
-            if(isMember){
+            // const isMember = await checkMemberOfRoom({userId: userId, roomId});
+            // console.log(isMember);
+            // if(isMember){
                 socket.join(roomId);
                 console.log("Joined socket of room")
-            }
+            //}
         }
         catch(err){
             console.log(err);
@@ -112,24 +112,12 @@ io.on('connection', socket => {
 
 
     //Fetch messages from room for user
-    socket.on('fetchRoomMessages', async ({roomId, fetchAfter}) => {
-        console.log("inside fetch room messages")
-        const data = {
-            'fetchAfter': Date.now()-24000,
-            'roomId': roomId
-        } 
-        try{
-            const messages = await getRoomMessages(data,{
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              });
-            socket.emit('fetchedRoomMessages', messages);
-            console.log(messages);
-        }   
-        catch(err){
-            console.log(err);
-        }
+    socket.on('fetchRoomMessages', async ({roomId}) => {
+        
+        console.log("inside fetch room messages ", roomId)
+        socket.emit('fetchedRoomMessages');
+        console.log("emitted");
+        
     })
 
 
