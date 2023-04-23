@@ -115,7 +115,7 @@ io.on('connection', socket => {
     socket.on('fetchRoomMessages', async ({roomId}) => {
         
         console.log("inside fetch room messages ", roomId)
-        socket.emit('fetchedRoomMessages');
+        socket.to(roomId).emit('fetchedRoomMessages');
         console.log("emitted");
         
     })
@@ -127,9 +127,7 @@ io.on('connection', socket => {
         console.log("Inside disconnect")
         //Set status to offline and last seen
         statusOfflineLastSeen({userId: userId});
-        
-        io.emit('message', formatMessage(botName,'A user has left the chat'))
-        //end
+
     });
 })
 
